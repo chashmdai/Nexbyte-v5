@@ -32,20 +32,17 @@ public class AuthService {
         
         usuarioRepository.save(usuario);
     }
+
     public AuthResponseDTO login(LoginDTO loginDTO) {
-        // 1. Spring Security verifica el correo y la contraseña
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginDTO.correo(), loginDTO.pass())
         );
 
-        // 2. Si las credenciales son correctas, buscamos al usuario
         Usuario usuario = usuarioRepository.findByCorreo(loginDTO.correo())
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado durante el login"));
             
-        // 3. Generamos un token para ese usuario
         String token = jwtService.generateToken(usuario.getCorreo());
 
-        // 4. Devolvemos el token en nuestro DTO de respuesta
         return new AuthResponseDTO(token);
     }
 }
