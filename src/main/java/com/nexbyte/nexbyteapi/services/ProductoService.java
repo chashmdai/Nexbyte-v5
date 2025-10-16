@@ -9,5 +9,5 @@ public interface ProductoService {
     List<Producto> listarTodos();
     Producto actualizar(Long id, Producto productoActualizado);
     void eliminar(Long id);
-    Producto desactivar(Long id); // Para la baja lógica
+    Producto desactivar(Long id);
 }

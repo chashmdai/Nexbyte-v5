@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,16 +27,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
+            .authorizeHttpRequests(authRequest ->
+                authRequest
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
             )
-
-            .authenticationProvider(authenticationProvider()); 
-
-        return http.build();
+            .sessionManagement(sessionManager ->
+                sessionManager
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authenticationProvider(authenticationProvider())
+            .build();
     }
 
     @Bean
@@ -62,8 +66,8 @@ public class SecurityConfig {
                 .map(usuario -> User.builder()
                         .username(usuario.getCorreo())
                         .password(usuario.getPass())
-                        .roles("USER") 
+                        .roles("USER")
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + username));
     }
 }

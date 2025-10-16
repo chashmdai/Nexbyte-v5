@@ -41,8 +41,6 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void eliminar(Long id) {
-        // En un proyecto real, preferiríamos la baja lógica siempre.
-        // Mantenemos este método para seguir la rúbrica si pide un DELETE físico.
         productoRepository.deleteById(id);
     }
 

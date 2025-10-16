@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "usuarios") // Es buena práctica nombrar las tablas en plural
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id

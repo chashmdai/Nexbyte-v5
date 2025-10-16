@@ -9,7 +9,7 @@ import com.nexbyte.nexbyteapi.services.ProductoService;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "http://localhost:5173") // Permitimos peticiones desde nuestro futuro frontend en React
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductoController {
 
     @Autowired

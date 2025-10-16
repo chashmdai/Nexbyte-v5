@@ -24,9 +24,9 @@ public class Producto {
 
     private String nombre;
     private String descripcion;
-    private BigDecimal precio; // Usamos BigDecimal para manejar dinero, es una mejor práctica.
+    private BigDecimal precio;
     private Integer stock;
-    private Boolean activo = true; // Por defecto, todos los productos están activos.
+    private Boolean activo = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
