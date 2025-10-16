@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
+
             .authenticationProvider(authenticationProvider()); 
 
         return http.build();
