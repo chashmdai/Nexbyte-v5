@@ -1,2 +1,2 @@
 package com.nexbyte.nexbyteapi.dto;
-public record AuthResponseDTO(String token) {}
+public record AuthResponseDTO(String token, UsuarioDTO usuario) {}
