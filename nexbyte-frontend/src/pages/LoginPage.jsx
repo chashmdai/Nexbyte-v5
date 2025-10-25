@@ -35,13 +35,31 @@ export default function LoginPage() {
     setLoginError("");
     try {
       const response = await loginUser(data);
-      if (response?.data?.token) {
+
+      // --- INICIO DE LA MODIFICACIÓN ---
+
+      // 1. Verificamos que la respuesta contenga AMBOS datos
+      if (response?.data?.token && response?.data?.usuario) {
+        
+        // 2. Guardamos ambos datos en localStorage
         localStorage.setItem("nexbyte_token", response.data.token);
+        localStorage.setItem("nexbyte_user", JSON.stringify(response.data.usuario));
+        
         window.dispatchEvent(new Event("auth-change")); // actualiza header
-        navigate("/productos");
+
+        // 3. Redirigimos según el ROL
+        const role = response.data.usuario.role;
+        if (role === "ADMIN") {
+          navigate("/admin"); // <-- ¡Nuevo! Redirige al panel de admin
+        } else {
+          navigate("/productos"); // Redirige a la tienda para CLIENT o VENDOR
+        }
+
       } else {
         setLoginError("Respuesta inesperada del servidor.");
       }
+      // --- FIN DE LA MODIFICACIÓN ---
+
     } catch (error) {
       console.error("Error de login:", error);
       if (error?.response?.status === 403 || error?.response?.status === 401) {
@@ -75,6 +93,7 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-3">
+          {/* ... (El resto de tu formulario JSX no cambia) ... */}
           <div className="form-row">
             <div>
               <label htmlFor="correo">Correo electrónico</label>

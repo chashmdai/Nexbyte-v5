@@ -4,6 +4,7 @@ import com.nexbyte.nexbyteapi.dto.SolicitudSoporteDTO;
 import com.nexbyte.nexbyteapi.entities.PrioridadSoporte;
 import com.nexbyte.nexbyteapi.entities.SolicitudSoporte;
 import com.nexbyte.nexbyteapi.repositories.SolicitudSoporteRepository;
+import java.util.List; // <-- AÑADIR IMPORT
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +29,11 @@ public class SolicitudSoporteServiceImpl implements SolicitudSoporteService {
                 .descripcionProblema(dto.descripcionProblema())
                 .build();
         return solicitudRepository.save(nuevaSolicitud);
+    }
+
+    // --- AÑADIR ESTE NUEVO MÉTODO ---
+    @Override
+    public List<SolicitudSoporte> listarSolicitudes() {
+        return solicitudRepository.findAll();
     }
 }

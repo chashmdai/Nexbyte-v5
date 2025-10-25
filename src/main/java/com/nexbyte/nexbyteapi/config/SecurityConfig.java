@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,6 +29,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true) // opcional, útil si luego usas @PreAuthorize/@Secured
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -47,17 +49,20 @@ public class SecurityConfig {
         return http
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // públicos
+                        // Públicos
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/contactos").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/soporte").permitAll()
-                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // admin
+                        // Admin productos/categorías/usuarios
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/productos/**").hasRole("ADMIN")
@@ -67,10 +72,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
-                        // resto autenticado
+                        // Admin solo GET para Contactos (cubre sin y con slash, y subrutas)
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/contactos",
+                                "/api/contactos/",
+                                "/api/contactos/**"
+                        ).hasRole("ADMIN")
+
+                        // Admin solo GET para Soporte
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/soporte",
+                                "/api/soporte/",
+                                "/api/soporte/**"
+                        ).hasRole("ADMIN")
+
+                        // Resto autenticado
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -106,8 +124,7 @@ public class SecurityConfig {
                 .map(u -> User.builder()
                         .username(u.getCorreo())
                         .password(u.getPass())
-                        // OJO: si en BD guardas "ROLE_ADMIN", usa authorities en vez de roles.
-                        .roles(u.getRole().name())
+                        .roles(u.getRole().name()) // genera ROLE_ADMIN / ROLE_CLIENT
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + username));
     }
@@ -117,10 +134,10 @@ public class SecurityConfig {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of("http://localhost:5173"));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         cfg.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
-        src.registerCorsConfiguration("/api/**", cfg);
+        src.registerCorsConfiguration("/**", cfg);
         return src;
     }
 }

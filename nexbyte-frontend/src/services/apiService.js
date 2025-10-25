@@ -23,6 +23,8 @@ export const createProducto = (producto) => apiClient.post('/productos', product
 export const updateProducto = (id, producto) => apiClient.put(`/productos/${id}`, producto);
 export const desactivarProducto = (id) => apiClient.patch(`/productos/${id}/desactivar`);
 
+export const eliminarUsuario = (id) => apiClient.delete(`/usuarios/${id}`); // <-- ¡AÑADE ESTA LÍNEA!
+
 export const getCategorias = () => apiClient.get('/categorias');
 export const createCategoria = (categoria) => apiClient.post('/categorias', categoria);
 
@@ -35,6 +37,7 @@ export const registerUser = (userData) => apiClient.post('/auth/registro', userD
 
 export const logoutUser = () => {
   localStorage.removeItem('nexbyte_token');
+  localStorage.removeItem('nexbyte_user'); // (Asegúrate que esto también esté)
   window.dispatchEvent(new Event('auth-change'));
 };
 

@@ -1,0 +1,45 @@
+/*
+ * Estilos para el AdminLayout
+ */
+
+.admin-layout-container .row {
+  /* Asegura que la fila no se "envuelva" (wrap) */
+  flex-wrap: nowrap;
+}
+
+.admin-sidebar {
+  /* Fija la barra lateral y le da un alto de 100% */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 1rem;
+  
+  /* Flexbox para alinear el contenido (y el link de "Volver" abajo) */
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-main-content {
+  /* Permite que el área de contenido principal tenga scroll */
+  height: 100vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+/* * Estilo para el NavLink que esté activo (la página actual)
+ * ¡Esto es gracias a usar NavLink de react-router-dom!
+ */
+.admin-sidebar .nav-link.active {
+  background-color: var(--bs-primary); /* Usa el color primario de Bootstrap */
+  color: white;
+}
+
+/* Estilos menores para los enlaces */
+.admin-sidebar .nav-link {
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.admin-sidebar .nav-link:hover {
+  background-color: #e9ecef; /* Un gris suave al pasar el mouse */
+}

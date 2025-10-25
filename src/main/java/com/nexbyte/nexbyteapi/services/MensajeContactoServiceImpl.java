@@ -3,6 +3,7 @@ package com.nexbyte.nexbyteapi.services;
 import com.nexbyte.nexbyteapi.dto.MensajeContactoDTO;
 import com.nexbyte.nexbyteapi.entities.MensajeContacto;
 import com.nexbyte.nexbyteapi.repositories.MensajeContactoRepository;
+import java.util.List; // <-- AÑADIR IMPORT
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,12 @@ public class MensajeContactoServiceImpl implements MensajeContactoService {
                 .mensaje(mensajeDTO.mensaje())
                 .build();
         return mensajeRepository.save(nuevoMensaje);
+    }
+
+    // --- AÑADIR ESTE NUEVO MÉTODO ---
+    @Override
+    public List<MensajeContacto> listarMensajes() {
+        // Simplemente devolvemos todos los mensajes encontrados
+        return mensajeRepository.findAll();
     }
 }
