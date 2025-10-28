@@ -10,7 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+// import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // <-- Correcto, comentado
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true) // opcional, útil si luego usas @PreAuthorize/@Secured
+// @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true) // <-- Correcto, comentado
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -72,12 +72,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
-                        // Admin solo GET para Contactos (cubre sin y con slash, y subrutas)
+                        // --- CAMBIO DE PRUEBA DE DIAGNÓSTICO ---
+                        // Cambiamos hasRole("ADMIN") por permitAll() temporalmente.
                         .requestMatchers(HttpMethod.GET,
                                 "/api/contactos",
                                 "/api/contactos/",
                                 "/api/contactos/**"
-                        ).hasRole("ADMIN")
+                        ).permitAll() // <-- ESTE ES EL CAMBIO TEMPORAL
 
                         // Admin solo GET para Soporte
                         .requestMatchers(HttpMethod.GET,

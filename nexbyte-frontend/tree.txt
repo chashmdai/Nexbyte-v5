@@ -1,0 +1,81 @@
+Listado de rutas de carpetas para el volumen Disco local
+El número de serie del volumen es 8E07-3F88
+D:\NEXBYTEAPI\NEXBYTE-FRONTEND
+|   .gitignore
+|   eslint.config.js
+|   index.html
+|   package-lock.json
+|   package.json
+|   README.md
+|   tree.txt
+|   vite.config.js
+|   
++---public
+|   |   vite.svg
+|   |   
+|   \---assets
+|       \---img
+|           \---placeholder
+|                   1-8.png
+|                   hero.jpg
+|                   post-1.jpg
+|                   post-2.jpg
+|                   post-3.jpg
+|                   post-4.jpg
+|                   product-1.jpg
+|                   product-2.jpg
+|                   product-3.jpg
+|                   product-4.jpg
+|                   
+\---src
+    |   App.jsx
+    |   index.css
+    |   main.jsx
+    |   
+    +---components
+    |       Footer.jsx
+    |       Header.jsx
+    |       ProtectedRoute.jsx
+    |       PublicLayout.jsx
+    |       ToastProvider.jsx
+    |       
+    +---context
+    |       CartContext.jsx
+    |       
+    +---data
+    |       blogData.js
+    |       regiones.js
+    |       
+    +---hooks
+    |       useAuth.js
+    |       
+    +---pages
+    |   |   AyudaPage.jsx
+    |   |   BlogDetailPage.jsx
+    |   |   BlogListPage.jsx
+    |   |   CartPage.jsx
+    |   |   CategoriaFormPage.jsx
+    |   |   ContactPage.jsx
+    |   |   GarantiasPage.jsx
+    |   |   HomePage.jsx
+    |   |   LoginPage.jsx
+    |   |   NosotrosPage.jsx
+    |   |   ProductDetailPage.jsx
+    |   |   ProductFormPage.jsx
+    |   |   ProductListPage.jsx
+    |   |   RegisterPage.jsx
+    |   |   SoportePage.jsx
+    |   |   
+    |   \---admin
+    |           AdminContactoPage.jsx
+    |           AdminDashboardPage.jsx
+    |           AdminLayout.css
+    |           AdminLayout.jsx
+    |           AdminProductListPage.jsx
+    |           AdminSoportePage.jsx
+    |           AdminUserFormPage.jsx
+    |           AdminUserListPage.jsx
+    |           
+    \---services
+            apiService.js
+            
