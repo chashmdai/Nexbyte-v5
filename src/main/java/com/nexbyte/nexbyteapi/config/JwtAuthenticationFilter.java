@@ -21,14 +21,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
+    // Endpoints realmente públicos SIN considerar método (solo GETs "de lectura" se manejan en SecurityConfig)
     private static final String[] PUBLIC_ENDPOINTS = new String[] {
         "/swagger-ui.html", "/swagger-ui/**",
         "/v3/api-docs/**", "/v3/api-docs.yaml",
         "/swagger-resources/**", "/webjars/**",
         "/api/auth/**",
         "/api/contactos",
-        "/api/productos/**",
-        "/api/categorias/**"
+        "/api/contacto"
+        // IMPORTANTE: NO incluir /api/soporte aquí (solo su POST será público más abajo)
+        // IMPORTANTE: NO incluir productos/categorías aquí; se controlan en SecurityConfig
     };
 
     private final JwtService jwtService;
@@ -44,12 +46,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublic(HttpServletRequest request) {
+        // 1) Deja pasar todos los preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
 
-        String servletPath = request.getServletPath();
-        String requestUri = request.getRequestURI();
+        final String servletPath = request.getServletPath();
+        final String requestUri  = request.getRequestURI();
 
-        return matchesAny(servletPath, PUBLIC_ENDPOINTS) || matchesAny(requestUri, PUBLIC_ENDPOINTS);
+        // 2) Endpoints públicos "planos"
+        if (matchesAny(servletPath, PUBLIC_ENDPOINTS) || matchesAny(requestUri, PUBLIC_ENDPOINTS)) {
+            return true;
+        }
+
+        // 3) Solo el POST a /api/soporte es público (enviar ticket)
+        if ("POST".equalsIgnoreCase(request.getMethod())
+                && (PATH_MATCHER.match("/api/soporte", servletPath)
+                    || PATH_MATCHER.match("/api/soporte/", servletPath))) {
+            return true;
+        }
+
+        // 4) Todo lo demás requiere autenticación (SecurityConfig decidirá rol)
+        return false;
     }
 
     @Override
@@ -58,20 +74,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        // Endpoints públicos o preflight
         if (isPublic(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Si no trae Authorization Bearer, continúa anónimo (y Security decidirá)
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Extrae usuario desde el JWT y autentica el contexto
         String jwt = authHeader.substring(BEARER_PREFIX.length());
-        String username = null;
-
+        String username;
         try {
             username = jwtService.extractUsername(jwt);
         } catch (Exception ignored) {
@@ -89,7 +107,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {}
         }
 
         filterChain.doFilter(request, response);
